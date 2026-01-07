@@ -12,10 +12,11 @@ RUN apk add --no-cache \
     zip \
     unzip \
     git \
-    curl
+    curl \
+    icu-dev
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql bcmath gd
+RUN docker-php-ext-install pdo pdo_mysql bcmath gd intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
