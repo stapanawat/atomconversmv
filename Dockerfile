@@ -1,19 +1,21 @@
-# Build stage
-FROM node:20-alpine AS node-builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Production stage
+# Base image with PHP 8.2
 FROM php:8.2-fpm-alpine
 
-# Install dependencies
+# Install system dependencies
 RUN apk add --no-cache \
     nginx \
     supervisor \
-    && docker-php-ext-install pdo pdo_mysql bcmath
+    nodejs \
+    npm \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql bcmath gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -21,11 +23,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy application files
-COPY --chown=www-data:www-data . .
-COPY --from=node-builder /app/public/build ./public/build
+COPY . .
+
+# Set environment for build
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Install Node dependencies and build assets
+RUN npm ci && npm run build
 
 # Copy nginx config
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf

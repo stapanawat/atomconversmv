@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+public/build
+storage/*.key
+vendor
+.env
+.git
+.github
+Dockerfile
+render.yaml
+docker
