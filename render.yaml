@@ -1,0 +1,26 @@
+# Render Blueprint for Laravel + Vue (Inertia)
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: atomconversmv
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: "MP3 to MV Converter"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_DRIVER
+        value: file
